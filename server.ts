@@ -10,7 +10,7 @@ app.get('/', async(req, res) => {
     res.send('<h1> Hello World </h1>')
   })
 
-app.use('/api/', router)
+app.use('/api/v1/', router)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
