@@ -1,10 +1,11 @@
-require('dotenv').config()
-const express = require('express')
+import * as dotenv from "dotenv"
+import express from "express"
+import {router} from "./routes"
+dotenv.config()
 const app = express()
-const router = require('./routes')
 app.use(express.json())
 
-app.get('/', (req, res) => {
+app.get('/', async(req, res) => {
     res.send('<h1> Hello World </h1>')
   })
 
