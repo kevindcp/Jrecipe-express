@@ -1,10 +1,12 @@
 import * as dotenv from "dotenv"
 import express from "express"
+import helmet from "helmet"
 import authRouter from './routes/authRoutes'
 
 dotenv.config({ path: __dirname+'/.env'})
 const app = express()
 app.use(express.json())
+app.use(helmet())
 
 app.get('/', async(req, res) => {
     res.send('<h1> Hello World </h1>')
