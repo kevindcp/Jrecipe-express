@@ -84,38 +84,48 @@ authRouter.post('/forgot', async(req,res) => {
         })
     }else{
         const recoverPasswordToken = crypto.randomBytes(30).toString("hex")
+        const thirtyMinutes = 1000 * 60 * 10 
+        const passwordTokenExpiration = new Date(Date.now() + thirtyMinutes)
         const userWithToken = await prisma.user.update({
             where : {
                 email
             },
             data : {
-                recoverPasswordToken
+                recoverPasswordToken,
+                passwordTokenExpiration
             },
         })
         await transporter.sendMail({
             to: userWithToken.email,
             subject: 'Password recovery',
             html: `<h4> Hello, ${userWithToken.name}</h4>
-            This is your password recovery code ${userWithToken.recoverPasswordToken}
+            This is your password recovery code ${userWithToken.recoverPasswordToken}.
+            <br>The code is valid for 30 minutes.
             `,
         })
-        res.status(200).json("request successful")
+        res.status(200).json("Recovery code sent")
     }
 })
 
 authRouter.post('/recover', async(req, res) => {
     const {email, recoverPasswordToken, password} = req.body
+    const currentDate = new Date()
     const user = await prisma.user.findUnique({
         where: {
             email,
         },
     })
-    if (!user || !(recoverPasswordToken == user.recoverPasswordToken)){
+    if (!user || !(recoverPasswordToken == user.recoverPasswordToken || user.passwordTokenExpiration === null)){
         res.status(401).json({
             error: 'An error occured'
         })
+    }else if(user.passwordTokenExpiration && user.passwordTokenExpiration < currentDate){
+        res.status(401).json({
+            error: 'expired token'
+        })
     }else{
         const passwordHash = await bcrypt.hash(password,10)
+
         await prisma.user.update({
             where : {
                 email

@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-    id                   Int     @id @default(autoincrement())
-    email                String  @unique
-    name                 String
-    role                 String  @default("USER")
-    passwordHash         String
-    recoverPasswordToken String?
-    recipes              Recipe?
+    id                      Int       @id @default(autoincrement())
+    email                   String    @unique
+    name                    String
+    role                    String    @default("USER")
+    passwordHash            String
+    recoverPasswordToken    String?
+    passwordTokenExpiration DateTime?
+    recipes                 Recipe?
 }
 
 model Recipe {
