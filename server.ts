@@ -8,10 +8,6 @@ const app = express()
 app.use(express.json())
 app.use(helmet())
 
-app.get('/', async(req, res) => {
-    res.send('<h1> Hello World </h1>')
-  })
-
 app.use('/api/v1/auth', authRouter)
 
 const PORT = process.env.PORT

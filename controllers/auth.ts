@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import { PrismaClient, Prisma } from '@prisma/client'
 import * as bcrypt from "bcrypt"
 import crypto from "crypto"
-import { transporter } from "../utils/sendEmail"
+import { sendConfirmationEmail, sendWelcomeEmail } from "../utils/sendEmail"
 import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
@@ -30,20 +30,8 @@ export const register = async(req: Request, res: Response) => {
                     passwordHash,
                 }
             })
-            const newUser = ({
-                id: createdUser.id,
-                name : createdUser.name,
-                email : createdUser.email,
-                role: createdUser.role,
-            })
-            await transporter.sendMail({
-                to: newUser.email,
-                subject: 'Welcome to Jrecipe',
-                html: `<h4> Hello, ${newUser.name}</h4>
-                Welcome to Jrecipe
-                `,
-            })
-            res.status(200).json(newUser)  
+            await sendWelcomeEmail({username: createdUser.name, email: createdUser.email})
+            res.status(200).json('Created user successfuly')  
         }catch(err){
             res.status(401).json({
                 error: err
@@ -101,16 +89,10 @@ export const forgotPassword = async(req: Request, res: Response) => {
                     passwordTokenExpiration
                 },
             })
-            await transporter.sendMail({
-                to: userWithToken.email,
-                subject: 'Password recovery',
-                html: `<h4> Hello, ${userWithToken.name}</h4>
-                This is your password recovery code ${userWithToken.recoverPasswordToken}
-                <br>
-                <br>
-                The code is valid for 30 minutes.
-                `,
-            })
+            if(userWithToken.recoverPasswordToken === null){ 
+                throw new Error('Unexpected null token')
+            }
+            await sendConfirmationEmail({email :userWithToken.email, username: userWithToken.name, recoveryToken : userWithToken.recoverPasswordToken})
             res.status(200).json("Recovery code sent")
         }catch(err){
             res.status(401).json({

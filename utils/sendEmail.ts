@@ -1,12 +1,25 @@
-import nodemailer from "nodemailer"
+import { transporter } from "./nodemailer.config"
+import { welcomeEmailData, confirmationEmailData } from "./types"
 
-const nodemailerConfig =  {
-    host: process.env.EMAIL_HOST as string,
-    port: parseInt(process.env.EMAIL_PORT as string),
-    auth: {
-      user: process.env.EMAIL_USER as string,
-      pass: process.env.EMAIL_PASS as string,
-    },
-};
+export const sendWelcomeEmail = async(content : welcomeEmailData ) => {
+  await transporter.sendMail({
+    to: content.email,
+    subject: 'Welcome to Jrecipe',
+    html: `<h4> Hello, ${content.username}</h4>
+    Welcome to Jrecipe
+    `,
+  })
+}
 
-export const transporter = nodemailer.createTransport(nodemailerConfig);
+export const sendConfirmationEmail = async (content : confirmationEmailData) => {
+  await transporter.sendMail({
+    to: content.email,
+    subject: 'Password recovery',
+    html: `<h4> Hello, ${content.username}</h4>
+    This is your password recovery code ${content.recoveryToken}
+    <br>
+    <br>
+    The code is valid for 30 minutes.
+    `,
+  })
+}
