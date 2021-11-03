@@ -1,6 +1,5 @@
 import * as dotenv from "dotenv"
 import express from "express"
-import router from "./routes"
 import authRouter from './controllers/auth'
 
 dotenv.config({ path: __dirname+'/.env'})

@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer"
 
 const nodemailerConfig =  {
-    host: 'smtp.ethereal.email',
-    port: 587,
+    host: process.env.EMAIL_HOST as string,
+    port: parseInt(process.env.EMAIL_PORT as string),
     auth: {
-      user: 'cx6fgt4bv63w4nit@ethereal.email',
-      pass: '43nxUmakGXzMxznrCN',
+      user: process.env.EMAIL_USER as string,
+      pass: process.env.EMAIL_PASS as string,
     },
 };
 
