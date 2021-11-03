@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv"
 import express from "express"
-import authRouter from './controllers/auth'
+import authRouter from './routes/authRoutes'
 
 dotenv.config({ path: __dirname+'/.env'})
 const app = express()
