@@ -10,12 +10,12 @@ const authRouter = express.Router()
 
 authRouter.post('/register', async(req, res) => {
     const {name, email, password} = req.body
-    const emailExist = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
         where: {
             email
         }
-    }) == null ? true : false
-    if (!emailExist) {
+    })
+    if (user) {
         res.status(401).json({
         error: 'A user with this email is already registered'
       })
@@ -81,7 +81,7 @@ authRouter.post('/forgot', async(req,res) => {
     if (!user){
         res.status(401).json({
             error: 'invalid user or password'
-          })
+        })
     }else{
         const recoverPasswordToken = crypto.randomBytes(30).toString("hex")
         const userWithToken = await prisma.user.update({
@@ -99,7 +99,33 @@ authRouter.post('/forgot', async(req,res) => {
             This is your password recovery code ${userWithToken.recoverPasswordToken}
             `,
         })
-        res.status(200).json(userWithToken)
+        res.status(200).json("request successful")
+    }
+})
+
+authRouter.post('/recover', async(req, res) => {
+    const {email, recoverPasswordToken, password} = req.body
+    const user = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+    })
+    if (!user || !(recoverPasswordToken == user.recoverPasswordToken)){
+        res.status(401).json({
+            error: 'An error occured'
+        })
+    }else{
+        const passwordHash = await bcrypt.hash(password,10)
+        await prisma.user.update({
+            where : {
+                email
+            },
+            data : {
+                passwordHash,
+                recoverPasswordToken : null
+            },
+        })
+        res.status(200).json("Password changed")
     }
 })
 
