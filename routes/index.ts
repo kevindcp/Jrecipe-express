@@ -1,7 +1,5 @@
 import express from "express"
-import { PrismaClient, Prisma } from '@prisma/client'
-import userRouter from "../controllers/user"
-const prisma = new PrismaClient()
+import userRouter from "../controllers/auth"
 const router = express.Router()
 
 router.get('/',async (req, res) => {
