@@ -20,7 +20,6 @@ export const register = async(req: Request, res: Response) => {
             error: 'A user with this email is already registered'
         })
         }else{
-            
                 const passwordHash = await bcrypt.hash(password, 10)
                 const role = await prisma.user.count() === 0 ? 'ADMIN' : 'USER'
                 const createdUser = await prisma.user.create({ 
@@ -33,7 +32,8 @@ export const register = async(req: Request, res: Response) => {
                 })
                 await sendWelcomeEmail({username: createdUser.name, email: createdUser.email})
                 res.status(200).json('Created user successfuly')  
-            }
+            
+        }
     }catch(err){
         res.status(401).json({
             error: err
@@ -42,7 +42,7 @@ export const register = async(req: Request, res: Response) => {
 }
 
 export const login = async(req: Request, res: Response)=>{
-    try {
+    try{
         const {email, password} = req.body
         const user = await prisma.user.findUnique({
             where : {
