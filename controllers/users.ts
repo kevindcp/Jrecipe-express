@@ -25,9 +25,6 @@ export const getAll = async (req : Request, res : Response) => {
 export const getUser = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const { decodedToken } = req.body
-        // only admin can access all user, others can only access themselves
-        if (decodedToken.role != 'ADMIN' && parseInt(decodedToken.id) != id)  return res.status(401).json({ error: 'Not authorized' })
         const user = await prisma.user.findUnique({
             where: {
                 id
@@ -37,6 +34,25 @@ export const getUser = async(req: Request, res: Response) => {
                 email : true,
                 name: true, 
                 role: true,
+                recipes: true
+            }
+        })
+        res.status(200).json(user)
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+export const getUserRecipes = async(req: Request, res: Response) => {
+    try {
+        const id = parseInt(req.params.id)
+        const user = await prisma.user.findUnique({
+            where: {
+                id
+            },
+            select : {
                 recipes: true
             }
         })

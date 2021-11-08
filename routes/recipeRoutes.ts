@@ -1,6 +1,6 @@
 import express from "express"
 import { deleteRecipe, getAll, getRecipe, postRecipe, updateRecipe } from "../controllers/recipes"
-import { decodeToken } from "../middleware/decodeToken"
+import { checkAuth } from "../middleware/checkAuth"
 
 
 const recipeRouter = express.Router()
@@ -9,10 +9,10 @@ recipeRouter.get('/', getAll)
 
 recipeRouter.get('/:id', getRecipe)
 
-recipeRouter.post('/', decodeToken, postRecipe)
+recipeRouter.post('/', checkAuth, postRecipe)
 
-recipeRouter.patch('/:id', decodeToken, updateRecipe)
+recipeRouter.patch('/:id', checkAuth, updateRecipe)
 
-recipeRouter.delete('/:id', decodeToken, deleteRecipe)
+recipeRouter.delete('/:id', checkAuth, deleteRecipe)
 
 export default recipeRouter

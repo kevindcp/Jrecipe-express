@@ -1,16 +1,18 @@
 import express from "express"
-import { deleteUser, getAll, getUser, updateUser } from "../controllers/users"
-import { decodeToken } from "../middleware/decodeToken"
+import { deleteUser, getAll, getUser, getUserRecipes, updateUser } from "../controllers/users"
+import { checkAuth } from "../middleware/checkAuth"
 import { isAdmin } from "../middleware/isAdmin"
 
 const userRouter = express.Router()
 
-userRouter.get('/', decodeToken, isAdmin, getAll)
+userRouter.get('/', checkAuth, isAdmin, getAll)
 
-userRouter.get('/:id', decodeToken, getUser)
+userRouter.get('/:id', checkAuth, isAdmin, getUser)
 
-userRouter.patch('/:id', decodeToken, isAdmin, updateUser)
+userRouter.patch('/:id', checkAuth, isAdmin, updateUser)
 
-userRouter.delete('/:id', decodeToken, isAdmin, deleteUser)
+userRouter.delete('/:id', checkAuth, isAdmin, deleteUser)
+
+userRouter.get('/:id/recipes', checkAuth, getUserRecipes)
 
 export default userRouter

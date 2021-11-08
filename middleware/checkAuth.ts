@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import { RequestHandler } from "express"
 
-export const decodeToken : RequestHandler = (req, res, next) => {
+export const checkAuth : RequestHandler = (req, res, next) => {
   const authorization = req.get('authorization')
   let token = ' '
   if (authorization && authorization.toLowerCase().startsWith('bearer')) {
