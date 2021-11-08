@@ -1,4 +1,4 @@
-import { Response, Request } from "express"
+import { Response, Request, RequestHandler } from "express"
 import { PrismaClient, Prisma } from '@prisma/client'
 import { threadId } from "worker_threads"
 
@@ -49,8 +49,8 @@ export const updateUser = async(req: Request, res: Response) => {
                 id
             }
         })
-        if (!original) throw new Error('User id not valid')
-        const updated = await prisma.user.update({
+        if (!original) return res.status(400).send('User id not valid')
+        await prisma.user.update({
             where : {
                 id
             },
@@ -71,7 +71,7 @@ export const updateUser = async(req: Request, res: Response) => {
 export const deleteUser = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        if (id == 1) throw new Error('Cant delete admin')
+        if (id == 1) return res.status(400).send('Cant delete admin')
         await prisma.user.delete({
             where: {
                 id
