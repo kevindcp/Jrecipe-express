@@ -15,7 +15,7 @@ model User {
     passwordHash            String
     recoverPasswordToken    String?
     passwordTokenExpiration DateTime?
-    recipes                 Recipe?
+    recipes                 Recipe[]
 }
 
 model Recipe {
