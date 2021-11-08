@@ -1,27 +1,32 @@
-import { Response, Request, RequestHandler } from "express"
+import { Response, Request } from "express"
 import { PrismaClient, Prisma } from '@prisma/client'
-import { threadId } from "worker_threads"
-import { decodeToken } from "../middleware/decodeToken"
 
 const prisma = new PrismaClient()
 
 export const getAll = async (req : Request, res : Response) => {
-    const users = await prisma.user.findMany({
-        select : {
-            id: true,
-            email : true,
-            name: true, 
-            role: true,
-            recipes: true
-        }
-    })
-    res.status(200).json(users)
+    try {
+        const users = await prisma.user.findMany({
+            select : {
+                id: true,
+                email : true,
+                name: true, 
+                role: true,
+                recipes: true
+            }
+        })
+        res.status(200).json(users)
+    } catch (err) {
+        res.status(400).json({
+            error: err
+        })
+    }
 }
 
 export const getUser = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
         const { decodedToken } = req.body
+        // only admin can access all user, others can only access themselves
         if (decodedToken.role != 'ADMIN' && parseInt(decodedToken.id) != id)  return res.status(401).json({ error: 'Not authorized' })
         const user = await prisma.user.findUnique({
             where: {

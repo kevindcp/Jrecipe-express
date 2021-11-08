@@ -19,12 +19,10 @@ model User {
 }
 
 model Recipe {
-    id          Int    @default(autoincrement())
+    id          Int    @id @default(autoincrement())
     title       String
     ingredients String
     steps       String
     author      User   @relation(fields: [authorId], references: [id])
-    authorId    Int    @unique
-
-    @@id([id, authorId])
+    authorId    Int
 }
