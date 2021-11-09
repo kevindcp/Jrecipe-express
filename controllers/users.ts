@@ -48,7 +48,7 @@ export const getUser = async(req: Request, res: Response) => {
 export const getUserRecipes = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const user = await prisma.user.findUnique({
+        const userRecipes = await prisma.user.findUnique({
             where: {
                 id
             },
@@ -56,7 +56,31 @@ export const getUserRecipes = async(req: Request, res: Response) => {
                 recipes: true
             }
         })
-        res.status(200).json(user)
+        res.status(200).json(userRecipes)
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+export const getUserRecipesByCategory = async(req: Request, res: Response) => {
+    try {
+        const id = parseInt(req.params.id)
+        const categoryId = parseInt(req.params.catId)
+        const userRecipes = await prisma.user.findUnique({
+            where: {
+                id
+            },
+            select : {
+                recipes: {
+                    where: {
+                        categoryId
+                    }
+                }
+            }
+        })
+        res.status(200).json(userRecipes)
     } catch (err) { 
         res.status(400).json({
             error: err

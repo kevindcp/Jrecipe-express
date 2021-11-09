@@ -16,6 +16,7 @@ model User {
     recoverPasswordToken    String?
     passwordTokenExpiration DateTime?
     recipes                 Recipe[]
+    profile                 Profile?
 }
 
 model Recipe {
@@ -31,6 +32,13 @@ model Recipe {
 
 model Category {
     id      Int      @id @default(autoincrement())
-    name    String
+    name    String   @unique
     recipes Recipe[]
+}
+
+model Profile {
+    id     Int     @id @default(autoincrement())
+    bio    String?
+    userId Int     @unique
+    user   User    @relation(fields: [userId], references: [id])
 }

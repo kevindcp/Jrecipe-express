@@ -2,6 +2,7 @@ import * as dotenv from "dotenv"
 import express from "express"
 import helmet from "helmet"
 import authRouter from './routes/authRoutes'
+import categoryRouter from "./routes/categoryRoutes"
 import recipeRouter from "./routes/recipeRoutes"
 import userRouter from "./routes/userRoutes"
 
@@ -15,6 +16,8 @@ app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
 
 app.use('/api/v1/recipes', recipeRouter)
+
+app.use('/api/v1/categories', categoryRouter)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
