@@ -15,7 +15,7 @@ export const register = async(req: Request, res: Response) => {
                 email
             }
         })
-        if (user) return res.status(400).send('A user with this email is already registered')
+        if (user) return res.status(400).json('A user with this email is already registered')
         const passwordHash = await bcrypt.hash(password, 10)
         const role = await prisma.user.count() === 0 ? 'ADMIN' : 'USER'
         const createdUser = await prisma.user.create({ 
@@ -49,7 +49,7 @@ export const login = async(req: Request, res: Response)=>{
             },
         })
         const passwordIsCorrect = user === null ? false: await bcrypt.compare(password, user.passwordHash)
-        if (!user || !passwordIsCorrect) return res.status(400).send('invalid user or password')
+        if (!user || !passwordIsCorrect) return res.status(400).json('invalid user or password')
         const tokenContent = {
             id: user.id,
             role: user.role,
@@ -73,7 +73,7 @@ export const forgotPassword = async(req: Request, res: Response) => {
                 email
             }
         })
-        if (!user) return res.status(400).send('invalid user or password')
+        if (!user) return res.status(400).json('invalid user or password')
         const recoverPasswordToken = crypto.randomBytes(30).toString("hex")
         const thirtyMinutes = 1000 * 60 * 10 
         const passwordTokenExpiration = new Date(Date.now() + thirtyMinutes)
@@ -87,7 +87,7 @@ export const forgotPassword = async(req: Request, res: Response) => {
             },
         })
         if(userWithToken.recoverPasswordToken === null){ 
-            return res.status(400).send('Unexpected null token')
+            return res.status(400).json('Unexpected null token')
         }
         await sendConfirmationEmail({email :userWithToken.email, username: userWithToken.name, recoveryToken : userWithToken.recoverPasswordToken})
         res.status(200).json("Recovery code sent")
@@ -107,8 +107,8 @@ export const recoverPassword =  async(req: Request, res: Response) => {
                 email,
             },
         })
-        if (!user || !(recoverPasswordToken == user.recoverPasswordToken || user.passwordTokenExpiration === null)) return res.status(400).send('An error occured')
-        if (user.passwordTokenExpiration && user.passwordTokenExpiration < currentDate) return res.status(400).send('Expired token')
+        if (!user || !(recoverPasswordToken == user.recoverPasswordToken || user.passwordTokenExpiration === null)) return res.status(400).json('An error occured')
+        if (user.passwordTokenExpiration && user.passwordTokenExpiration < currentDate) return res.status(400).json('Expired token')
         const passwordHash = await bcrypt.hash(password,10)
         await prisma.user.update({
             where : {
