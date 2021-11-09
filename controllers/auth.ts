@@ -24,6 +24,11 @@ export const register = async(req: Request, res: Response) => {
                 email,
                 role,
                 passwordHash,
+                profile: {
+                    create: {
+                      bio: "Hello World",
+                    },
+                }
             }
         })
         await sendWelcomeEmail({username: createdUser.name, email: createdUser.email})

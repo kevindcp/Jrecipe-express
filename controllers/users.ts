@@ -11,7 +11,7 @@ export const getAll = async (req : Request, res : Response) => {
                 email : true,
                 name: true, 
                 role: true,
-                recipes: true
+                recipes: true,
             }
         })
         res.status(200).json(users)
@@ -34,7 +34,7 @@ export const getUser = async(req: Request, res: Response) => {
                 email : true,
                 name: true, 
                 role: true,
-                recipes: true
+                recipes: true,
             }
         })
         res.status(200).json(user)
@@ -88,10 +88,32 @@ export const getUserRecipesByCategory = async(req: Request, res: Response) => {
     }
 }
 
+export const getUserProfile = async(req: Request, res: Response) => {
+    try {
+        const id = parseInt(req.params.id)
+        const userRecipes = await prisma.user.findUnique({
+            where: {
+                id
+            },
+            select : {
+                profile: true
+            }
+        })
+        res.status(200).json(userRecipes)
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
 export const updateUser = async(req: Request, res: Response) => {
     try { 
         const id = parseInt(req.params.id)
-        const {email, name, role} = req.body
+        const {email, name, role, decodedToken} = req.body
+        const ownerId = decodedToken.id 
+        // Only admin and owner can update it
+        if (id != ownerId && decodedToken.role != 'ADMIN') return res.status(401).json({ error: 'Not authorized' })
         const original = await prisma.user.findUnique({
             where: {
                 id
@@ -110,6 +132,36 @@ export const updateUser = async(req: Request, res: Response) => {
         })
         res.status(200).json("Update sucessful")
     } catch(err) {
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+export const updateUserProfile = async(req: Request, res: Response) => {
+    try {
+        const id = parseInt(req.params.id)
+        const { bio, picture, decodedToken } = req.body
+        const ownerId = decodedToken.id 
+        // Only admin and owner can update it
+        if (id != ownerId && decodedToken.role != 'ADMIN') return res.status(401).json({ error: 'Not authorized' })
+        const original = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        })
+        if (!original) return res.status(400).json('User id not valid')
+        await prisma.profile.update({
+            where: {
+                userId: id
+            },
+            data : {
+                bio,
+                picture,
+            }
+        })
+        res.status(200).json('Success')
+    } catch (err) { 
         res.status(400).json({
             error: err
         })
