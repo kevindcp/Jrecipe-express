@@ -33,14 +33,15 @@ export const getRecipe = async(req: Request, res: Response) => {
 
 export const postRecipe = async(req: Request, res: Response) => {
     try {
-        const { title, ingredients, steps, decodedToken } = req.body
+        const { title, ingredients, steps, decodedToken, category } = req.body
         const authorId = decodedToken.id
         await prisma.recipe.create({
             data: {
                 title,
                 ingredients,
                 steps,
-                authorId
+                authorId,
+                categoryId : parseInt(category)
             }
         })
         res.status(200).json("Success")
@@ -54,7 +55,7 @@ export const postRecipe = async(req: Request, res: Response) => {
 export const updateRecipe = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const { title, ingredients, steps, decodedToken } = req.body
+        const { title, ingredients, steps, category, decodedToken } = req.body
         const authorId = decodedToken.id 
         const original = await prisma.recipe.findUnique({ 
             where: { 
@@ -72,7 +73,8 @@ export const updateRecipe = async(req: Request, res: Response) => {
             data: {
                 title,
                 ingredients,
-                steps
+                steps,
+                categoryId: parseInt(category)
             }
         })
         res.status(200).json("Sucess")
