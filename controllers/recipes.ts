@@ -35,7 +35,7 @@ export const postRecipe = async(req: Request, res: Response) => {
     try {
         const { title, ingredients, steps, decodedToken, category } = req.body
         const authorId = decodedToken.id
-        await prisma.recipe.create({
+        const recipe = await prisma.recipe.create({
             data: {
                 title,
                 ingredients,
@@ -44,7 +44,7 @@ export const postRecipe = async(req: Request, res: Response) => {
                 categoryId : parseInt(category)
             }
         })
-        res.status(200).json("Success")
+        res.status(200).json(recipe)
     } catch (err) {
         res.status(400).json({
             error: err
@@ -66,7 +66,7 @@ export const updateRecipe = async(req: Request, res: Response) => {
         if (!original) return res.status(400).json({ error: 'No such recipe' })
         // Only admin and creator of a recipe can update it
         if (original.authorId != authorId && decodedToken.role != 'ADMIN') return res.status(401).json({ error: 'Not authorized' })
-        await prisma.recipe.update({
+        const newRecipe = await prisma.recipe.update({
             where: {
                 id
             },
@@ -77,7 +77,7 @@ export const updateRecipe = async(req: Request, res: Response) => {
                 categoryId: parseInt(category)
             }
         })
-        res.status(200).json("Sucess")
+        res.status(200).json(newRecipe)
     } catch (err) {
         res.status(400).json({
             error: err

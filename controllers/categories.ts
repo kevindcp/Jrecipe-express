@@ -47,12 +47,12 @@ export const createCategory = async(req: Request, res: Response) => {
             }
         })
         if (category) return res.status(400).json('A category with this name already exists')
-        await prisma.category.create({
+        const newCategory = await prisma.category.create({
             data: {
                 name
             }
         })
-        res.status(200).json("success")
+        res.status(200).json(newCategory)
     } catch (err) {
         res.status(400).json({
             error: err
@@ -71,7 +71,7 @@ export const updateCategory = async(req: Request, res: Response) => {
         })
         // category does not exist
         if (!original) return res.status(400).json({ error: 'No such category' })
-        await prisma.category.update({
+        const updated = await prisma.category.update({
             where: {
                 id
             },
@@ -79,7 +79,7 @@ export const updateCategory = async(req: Request, res: Response) => {
                 name
             }
         })
-        res.status(200).json("success")
+        res.status(200).json(updated)
     } catch (err) {
         res.status(400).json({
             error: err

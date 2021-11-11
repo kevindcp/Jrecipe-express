@@ -110,7 +110,7 @@ export const getUserProfile = async(req: Request, res: Response) => {
 export const updateUser = async(req: Request, res: Response) => {
     try { 
         const id = parseInt(req.params.id)
-        const {email, name, role, decodedToken} = req.body
+        const {email, name, decodedToken} = req.body
         const ownerId = decodedToken.id 
         // Only admin and owner can update it
         if (id != ownerId && decodedToken.role != 'ADMIN') return res.status(401).json({ error: 'Not authorized' })
@@ -120,17 +120,16 @@ export const updateUser = async(req: Request, res: Response) => {
             }
         })
         if (!original) return res.status(400).json('User id not valid')
-        await prisma.user.update({
+        const updated = await prisma.user.update({
             where : {
                 id
             },
             data: {
                 email,
                 name,
-                role,
             }
         })
-        res.status(200).json("Update sucessful")
+        res.status(200).json(updated)
     } catch(err) {
         res.status(400).json({
             error: err
@@ -151,7 +150,7 @@ export const updateUserProfile = async(req: Request, res: Response) => {
             }
         })
         if (!original) return res.status(400).json('User id not valid')
-        await prisma.profile.update({
+        const updated = await prisma.profile.update({
             where: {
                 userId: id
             },
@@ -160,7 +159,7 @@ export const updateUserProfile = async(req: Request, res: Response) => {
                 picture,
             }
         })
-        res.status(200).json('Success')
+        res.status(200).json(updated)
     } catch (err) { 
         res.status(400).json({
             error: err

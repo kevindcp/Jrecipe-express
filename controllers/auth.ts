@@ -74,7 +74,7 @@ export const forgotPassword = async(req: Request, res: Response) => {
             }
         })
         if (!user) return res.status(400).json('invalid user or password')
-        const recoverPasswordToken = crypto.randomBytes(30).toString("hex")
+        const recoverPasswordToken = crypto.randomBytes(6).toString("hex")
         const thirtyMinutes = 1000 * 60 * 10 
         const passwordTokenExpiration = new Date(Date.now() + thirtyMinutes)
         const userWithToken = await prisma.user.update({
@@ -100,16 +100,17 @@ export const forgotPassword = async(req: Request, res: Response) => {
 
 export const recoverPassword =  async(req: Request, res: Response) => {
     try{
-        const {email, recoverPasswordToken, password} = req.body
+        const {email, recoverPasswordToken, newPassword} = req.body
         const currentDate = new Date()
         const user = await prisma.user.findUnique({
             where: {
                 email,
             },
         })
+        if (newPassword.length < 6) return res.status(400).json('Password is too short')
         if (!user || !(recoverPasswordToken == user.recoverPasswordToken || user.passwordTokenExpiration === null)) return res.status(400).json('An error occured')
-        if (user.passwordTokenExpiration && user.passwordTokenExpiration < currentDate) return res.status(400).json('Expired token')
-        const passwordHash = await bcrypt.hash(password,10)
+        if (user.passwordTokenExpiration && user.passwordTokenExpiration < currentDate) return res.status(401).json('Expired token')
+        const passwordHash = await bcrypt.hash(newPassword,10)
         await prisma.user.update({
             where : {
                 email
