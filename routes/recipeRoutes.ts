@@ -2,7 +2,6 @@ import express from "express"
 import { deleteRecipe, getAll, getRecipe, postRecipe, updateRecipe } from "../controllers/recipes"
 import { checkAuth } from "../middleware/checkAuth"
 
-
 const recipeRouter = express.Router()
 
 recipeRouter.get('/', getAll)
