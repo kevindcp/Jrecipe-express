@@ -34,6 +34,7 @@ export const getUser = async(req: Request, res: Response) => {
                 email : true,
                 name: true, 
                 role: true,
+                profile: true,
                 recipes: true,
             }
         })
@@ -81,6 +82,32 @@ export const getUserRecipesByCategory = async(req: Request, res: Response) => {
             }
         })
         res.status(200).json(userRecipes)
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+
+export const getMe = async(req: Request, res: Response) => {
+    try {
+        const { decodedToken } = req.body
+        const id = decodedToken.id
+        const user = await prisma.user.findUnique({
+            where: {
+                id
+            },
+            select : {
+                id: true,
+                email : true,
+                name: true, 
+                role: true,
+                profile: true,
+                recipes: true,
+            }
+        })
+        res.status(200).json(user)
     } catch (err) { 
         res.status(400).json({
             error: err

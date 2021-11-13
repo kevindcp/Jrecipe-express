@@ -1,5 +1,5 @@
 import express from "express"
-import { deleteUser, getAll, getUser, getUserProfile, getUserRecipes, getUserRecipesByCategory, updateUser, updateUserProfile } from "../controllers/users"
+import { deleteUser, getAll, getMe, getUser, getUserProfile, getUserRecipes, getUserRecipesByCategory, updateUser, updateUserProfile } from "../controllers/users"
 import { checkAuth } from "../middleware/checkAuth"
 import { isAdmin } from "../middleware/isAdmin"
 
@@ -21,6 +21,24 @@ const userRouter = express.Router()
  *         description: Returns all users on db
  */
 userRouter.get('/', checkAuth, isAdmin, getAll)
+
+
+/**
+ * @swagger
+ * /api/v1/users/me/:
+ *   get:
+ *     tags:
+ *       - users
+ *     description: Gets data from the current user
+ *     security:
+ *       - BearerAuth:
+ *           type: http
+ *           scheme: bearer
+ *     responses:
+ *       200:
+ *         description: Returns the user data
+ */
+ userRouter.get('/me', checkAuth, getMe)
 
 /**
  * @swagger
