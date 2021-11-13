@@ -41,6 +41,7 @@ export const getCategoryRecipes = async(req: Request, res: Response) => {
 export const createCategory = async(req: Request, res: Response) => {
     try {
         const { name } = req.body
+        if (!name) return res.status(400).json('Invalid request')
         const category = await prisma.category.findUnique({
             where: {
                 name

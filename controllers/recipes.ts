@@ -34,6 +34,7 @@ export const getRecipe = async(req: Request, res: Response) => {
 export const postRecipe = async(req: Request, res: Response) => {
     try {
         const { title, ingredients, steps, decodedToken, category } = req.body
+        if (!title||!ingredients||!steps) return res.status(400).json('Invalid request')
         const authorId = decodedToken.id
         const recipe = await prisma.recipe.create({
             data: {
