@@ -66,11 +66,11 @@ userRouter.get('/:id', checkAuth, isAdmin, getUser)
 
 /**
  * @swagger
- * /api/v1/users/{userId}/recipes/:
+ * /api/v1/users/{userId}/recipes/:cursor:
  *   get:
  *     tags:
  *       - users
- *     description: Gets the recipes from the user with matching id
+ *     description: Gets a page the recipes from the user with matching id
  *     security:
  *       - BearerAuth:
  *           type: http
@@ -82,11 +82,17 @@ userRouter.get('/:id', checkAuth, isAdmin, getUser)
  *           type: integer
  *         required: true
  *         description: Numeric ID of the user
+ *       - in: path
+ *         name: cursor
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the last recipe of the page
  *     responses:
  *       200:
- *         description: Returns the user with a matching id
+ *         description: Returns a page of recipes for the user with a matching id
  */
-userRouter.get('/:id/recipes', checkAuth, getUserRecipes)
+userRouter.get('/:id/recipes/:cursor', checkAuth, getUserRecipes)
 
 /**
  * @swagger

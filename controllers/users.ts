@@ -49,15 +49,34 @@ export const getUser = async(req: Request, res: Response) => {
 export const getUserRecipes = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const userRecipes = await prisma.user.findUnique({
-            where: {
-                id
-            },
-            select : {
-                recipes: true
-            }
-        })
-        res.status(200).json(userRecipes)
+        const cursor = parseInt(req.params.cursor)
+        if (cursor === 0) {
+            const userRecipes = await prisma.recipe.findMany({
+                take: 1,
+                where: {
+                    authorId:id
+                },
+                orderBy : {
+                    id: 'asc'
+                }
+            })
+            res.status(200).json(userRecipes) 
+        } else {
+            const userRecipes = await prisma.recipe.findMany({
+                take: 8,
+                skip: 1,
+                cursor: {
+                    id: cursor
+                },
+                where: {
+                    authorId:id
+                },
+                orderBy : {
+                    id: 'asc'
+                }
+            })
+            res.status(200).json(userRecipes) 
+        }
     } catch (err) { 
         res.status(400).json({
             error: err

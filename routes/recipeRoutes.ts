@@ -1,6 +1,7 @@
 import express from "express"
 import { deleteRecipe, getAll, getRecipe, postRecipe, updateRecipe } from "../controllers/recipes"
 import { checkAuth } from "../middleware/checkAuth"
+import { isAdmin } from "../middleware/isAdmin"
 
 const recipeRouter = express.Router()
 
@@ -10,7 +11,7 @@ const recipeRouter = express.Router()
  *   get:
  *     tags:
  *       - recipes
- *     description: Gets all the recipes
+ *     description: Gets all the recipes 
  *     responses:
  *       200:
  *         description: Returns all recipes on db
