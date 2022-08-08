@@ -8,7 +8,8 @@ export const getAll = async(req: Request, res: Response) => {
         const categories = await prisma.category.findMany({
             select: {
                 id: true,
-                name: true
+                name: true,
+                image: true
             }
         })
         res.status(200).json(categories)
@@ -40,7 +41,7 @@ export const getCategoryRecipes = async(req: Request, res: Response) => {
 
 export const createCategory = async(req: Request, res: Response) => {
     try {
-        const { name } = req.body
+        const { name, image } = req.body
         if (!name) return res.status(400).json('Invalid request')
         const category = await prisma.category.findUnique({
             where: {
@@ -50,7 +51,8 @@ export const createCategory = async(req: Request, res: Response) => {
         if (category) return res.status(400).json('A category with this name already exists')
         const newCategory = await prisma.category.create({
             data: {
-                name
+                name,
+                image
             }
         })
         res.status(200).json(newCategory)
@@ -64,7 +66,7 @@ export const createCategory = async(req: Request, res: Response) => {
 export const updateCategory = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const { name } = req.body
+        const { name, image } = req.body
         const original = await prisma.category.findUnique({
             where: { 
                 id
@@ -77,7 +79,8 @@ export const updateCategory = async(req: Request, res: Response) => {
                 id
             },
             data: {
-                name
+                name,
+                image
             }
         })
         res.status(200).json(updated)

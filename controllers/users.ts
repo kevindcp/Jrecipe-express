@@ -34,7 +34,6 @@ export const getUser = async(req: Request, res: Response) => {
                 email : true,
                 name: true, 
                 role: true,
-                profile: true,
                 recipes: true,
             }
         })
@@ -121,7 +120,6 @@ export const getMe = async(req: Request, res: Response) => {
                 email : true,
                 name: true, 
                 role: true,
-                profile: true,
             }
         })
         res.status(200).json(user)
@@ -189,25 +187,6 @@ export const getMeRecipesAll = async(req: Request, res: Response) => {
     }
 }
 
-export const getUserProfile = async(req: Request, res: Response) => {
-    try {
-        const id = parseInt(req.params.id)
-        const userRecipes = await prisma.user.findUnique({
-            where: {
-                id
-            },
-            select : {
-                profile: true
-            }
-        })
-        res.status(200).json(userRecipes)
-    } catch (err) { 
-        res.status(400).json({
-            error: err
-        })
-    }
-}
-
 export const updateUser = async(req: Request, res: Response) => {
     try { 
         const id = parseInt(req.params.id)
@@ -232,36 +211,6 @@ export const updateUser = async(req: Request, res: Response) => {
         })
         res.status(200).json(updated)
     } catch(err) {
-        res.status(400).json({
-            error: err
-        })
-    }
-}
-
-export const updateUserProfile = async(req: Request, res: Response) => {
-    try {
-        const id = parseInt(req.params.id)
-        const { bio, picture, decodedToken } = req.body
-        const ownerId = decodedToken.id 
-        // Only admin and owner can update it
-        if (id != ownerId && decodedToken.role != 'ADMIN') return res.status(401).json({ error: 'Not authorized' })
-        const original = await prisma.user.findUnique({
-            where: {
-                id
-            }
-        })
-        if (!original) return res.status(400).json('User id not valid')
-        const updated = await prisma.profile.update({
-            where: {
-                userId: id
-            },
-            data : {
-                bio,
-                picture,
-            }
-        })
-        res.status(200).json(updated)
-    } catch (err) { 
         res.status(400).json({
             error: err
         })

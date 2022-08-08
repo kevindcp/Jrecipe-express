@@ -25,12 +25,7 @@ export const register = async(req: Request, res: Response) => {
                 email,
                 role,
                 passwordHash,
-                profile: {
-                    create: {
-                      bio: "Hello World",
-                    },
                 }
-            }
         })
         res.status(200).json('Created user successfuly')  
     } catch(err){
@@ -49,7 +44,7 @@ export const login = async(req: Request, res: Response)=>{
             },
         })
         const passwordIsCorrect = user === null ? false: await bcrypt.compare(password, user.passwordHash)
-        if (!user || !passwordIsCorrect) return res.status(400).json('invalid user or password')
+        if (!user || !passwordIsCorrect) return res.status(400).json('Invalid user or password')
         const tokenContent = {
             id: user.id,
             role: user.role,
