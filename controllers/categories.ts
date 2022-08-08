@@ -6,6 +6,9 @@ const prisma = new PrismaClient()
 export const getAll = async(req: Request, res: Response) => {
     try {
         const categories = await prisma.category.findMany({
+            orderBy: {
+                id: 'asc'
+            },
             select: {
                 id: true,
                 name: true,
