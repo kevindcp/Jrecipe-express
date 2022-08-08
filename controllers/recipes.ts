@@ -33,7 +33,7 @@ export const getRecipe = async(req: Request, res: Response) => {
 
 export const postRecipe = async(req: Request, res: Response) => {
     try {
-        const { title, ingredients, steps, decodedToken, category, prepTime, cookTime} = req.body
+        const { title, ingredients, steps, decodedToken, category, prepTime, cookTime, image} = req.body
         if (!title||!cookTime||!prepTime) return res.status(400).json('Invalid request')
         const authorId = decodedToken.id
         const categoryName = await prisma.category.findUnique({
@@ -42,7 +42,6 @@ export const postRecipe = async(req: Request, res: Response) => {
             }
         })
         if (!categoryName) return res.status(400).json('Not a valid Category')
-        const image:string = categoryName.image
         const recipe = await prisma.recipe.create({
             data: {
                 title,
