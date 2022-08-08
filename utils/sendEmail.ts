@@ -1,6 +1,5 @@
 import { transporter } from "./nodemailer.config"
 import { welcomeEmailData, confirmationEmailData } from "./types"
-
 export const sendWelcomeEmail = async(content : welcomeEmailData ) => {
   await transporter.sendMail({
     to: content.email,

@@ -7,11 +7,18 @@ import recipeRouter from "./routes/recipeRoutes"
 import userRouter from "./routes/userRoutes"
 import * as swaggerUi from "swagger-ui-express"
 import swaggerOptions from "./utils/swaggerConfig"
+import cors from "cors"
 
 dotenv.config({ path: __dirname+'/.env'})
 const app = express()
 app.use(express.json())
-app.use(helmet())
+app.use(helmet.contentSecurityPolicy({
+  useDefaults: true,
+  directives: {
+    "img-src": ["'self'", "https: data:"]
+  }
+}))
+app.use(cors())
 
 const PORT = process.env.PORT
 
@@ -32,6 +39,8 @@ app.use('/api/v1/users', userRouter)
 app.use('/api/v1/recipes', recipeRouter)
 
 app.use('/api/v1/categories', categoryRouter)
+
+app.use(express.static('../front/dist'))
 
 app.listen(PORT, () => {
   console.log(`Server running in port ${PORT}`)

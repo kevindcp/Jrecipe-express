@@ -1,5 +1,5 @@
 import express from "express"
-import { deleteUser, getAll, getMe, getUser, getUserProfile, getUserRecipes, getUserRecipesByCategory, updateUser, updateUserProfile } from "../controllers/users"
+import { deleteUser, getAll, getMe, getMeRecipes, getMeRecipesAll, getUser, getUserProfile, getUserRecipes, getUserRecipesByCategory, updateUser, updateUserProfile } from "../controllers/users"
 import { checkAuth } from "../middleware/checkAuth"
 import { isAdmin } from "../middleware/isAdmin"
 
@@ -39,6 +39,53 @@ userRouter.get('/', checkAuth, isAdmin, getAll)
  *         description: Returns the user data
  */
  userRouter.get('/me', checkAuth, getMe)
+
+/**
+ * @swagger
+ * /api/v1/users/me/recipes/:cursor/:prev:
+ *   get:
+ *     tags:
+ *       - users
+ *     description: Gets a page of recipes from the current user
+ *     security:
+ *       - BearerAuth:
+ *           type: http
+ *           scheme: bearer
+ *     responses:
+ *       200:
+ *         description: Returns the user data
+ */
+ userRouter.get('/me/recipes/', checkAuth, getMeRecipesAll) 
+
+/**
+ * @swagger
+ * /api/v1/users/me/recipes/:cursor/:prev:
+ *   get:
+ *     tags:
+ *       - users
+ *     description: Gets a page of recipes from the current user
+ *     security:
+ *       - BearerAuth:
+ *           type: http
+ *           scheme: bearer
+ *     parameters:
+ *       - in: path
+ *         name: cursor
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric ID of the last recipe retrieved
+ *       - in: path
+ *         name: prev
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Numeric value that determines the mode (get previous page = 0 else get next page )
+ *     responses:
+ *       200:
+ *         description: Returns the user data
+ */
+ userRouter.get('/me/recipes/:cursor/:prev', checkAuth, getMeRecipes) 
 
 /**
  * @swagger

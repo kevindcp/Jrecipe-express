@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -52,7 +52,7 @@ export const getUserRecipes = async(req: Request, res: Response) => {
         const cursor = parseInt(req.params.cursor)
         if (cursor === 0) {
             const userRecipes = await prisma.recipe.findMany({
-                take: 1,
+                take: 8,
                 where: {
                     authorId:id
                 },
@@ -108,7 +108,6 @@ export const getUserRecipesByCategory = async(req: Request, res: Response) => {
     }
 }
 
-
 export const getMe = async(req: Request, res: Response) => {
     try {
         const { decodedToken } = req.body
@@ -123,10 +122,66 @@ export const getMe = async(req: Request, res: Response) => {
                 name: true, 
                 role: true,
                 profile: true,
-                recipes: true,
             }
         })
         res.status(200).json(user)
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+export const getMeRecipes = async(req: Request, res: Response) => {
+    try {
+        const { decodedToken } = req.body
+        const id = decodedToken.id
+        const cursor = parseInt(req.params.cursor)
+        const prev = parseInt(req.params.prev)
+        if (cursor === 0) {
+            const userRecipes = await prisma.recipe.findMany({
+                take: 8,
+                where: {
+                    authorId:id
+                },
+                orderBy : {
+                    id: 'asc'
+                }
+            })
+            res.status(200).json(userRecipes) 
+        } else {
+            const userRecipes = await prisma.recipe.findMany({
+                take: prev ? -8 : 8,
+                skip: 1,
+                cursor: {
+                    id: cursor
+                },
+                where: {
+                    authorId:id
+                },
+                orderBy : {
+                    id: 'asc'
+                }
+            })
+            res.status(200).json(userRecipes) 
+        }
+    } catch (err) { 
+        res.status(400).json({
+            error: err
+        })
+    }
+}
+
+export const getMeRecipesAll = async(req: Request, res: Response) => {
+    try {
+        const { decodedToken } = req.body
+        const id = decodedToken.id
+        const userRecipes = await prisma.recipe.findMany({
+            where: {
+                authorId:id
+            }
+        })
+        res.status(200).json(userRecipes) 
     } catch (err) { 
         res.status(400).json({
             error: err

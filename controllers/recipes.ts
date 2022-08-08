@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -33,8 +33,8 @@ export const getRecipe = async(req: Request, res: Response) => {
 
 export const postRecipe = async(req: Request, res: Response) => {
     try {
-        const { title, ingredients, steps, decodedToken, category } = req.body
-        if (!title||!ingredients||!steps) return res.status(400).json('Invalid request')
+        const { title, ingredients, steps, decodedToken, category, prepTime, cookTime, image } = req.body
+        if (!title||!cookTime||!prepTime) return res.status(400).json('Invalid request')
         const authorId = decodedToken.id
         const recipe = await prisma.recipe.create({
             data: {
@@ -42,6 +42,9 @@ export const postRecipe = async(req: Request, res: Response) => {
                 ingredients,
                 steps,
                 authorId,
+                prepTime,
+                cookTime,
+                image,
                 categoryId : parseInt(category)
             }
         })
@@ -56,7 +59,7 @@ export const postRecipe = async(req: Request, res: Response) => {
 export const updateRecipe = async(req: Request, res: Response) => {
     try {
         const id = parseInt(req.params.id)
-        const { title, ingredients, steps, category, decodedToken } = req.body
+        const { title, ingredients, steps, category, prepTime, cookTime, image, decodedToken } = req.body
         const authorId = decodedToken.id 
         const original = await prisma.recipe.findUnique({ 
             where: { 
@@ -75,7 +78,10 @@ export const updateRecipe = async(req: Request, res: Response) => {
                 title,
                 ingredients,
                 steps,
-                categoryId: parseInt(category)
+                categoryId: parseInt(category),
+                prepTime,
+                cookTime,
+                image,
             }
         })
         res.status(200).json(newRecipe)

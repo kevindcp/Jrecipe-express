@@ -1,5 +1,5 @@
 import express from "express"
-import { register, login, forgotPassword,recoverPassword } from "../controllers/auth"
+import { register, login, forgotPassword,recoverPassword, test } from "../controllers/auth"
 
 const authRouter = express.Router()
 
@@ -114,5 +114,7 @@ authRouter.post('/forgotPassword', forgotPassword)
  *         description: Authentication error
  */
 authRouter.post('/recoverPassword', recoverPassword)
+
+authRouter.post('/test', test)
 
 export default authRouter

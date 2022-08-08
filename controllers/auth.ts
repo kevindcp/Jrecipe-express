@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
-import { PrismaClient, Prisma } from '@prisma/client'
+import { PrismaClient} from '@prisma/client'
 import * as bcrypt from "bcrypt"
 import crypto from "crypto"
-import { sendConfirmationEmail, sendWelcomeEmail } from "../utils/sendEmail"
+import { sendConfirmationEmail } from "../utils/sendEmail"
 import jwt from "jsonwebtoken"
 
 const prisma = new PrismaClient()
@@ -19,7 +19,7 @@ export const register = async(req: Request, res: Response) => {
         if (user) return res.status(400).json('A user with this email is already registered')
         const passwordHash = await bcrypt.hash(password, 10)
         const role = await prisma.user.count() === 0 ? 'ADMIN' : 'USER'
-        const createdUser = await prisma.user.create({ 
+        await prisma.user.create({ 
             data: {
                 name, 
                 email,
@@ -32,7 +32,6 @@ export const register = async(req: Request, res: Response) => {
                 }
             }
         })
-        await sendWelcomeEmail({username: createdUser.name, email: createdUser.email})
         res.status(200).json('Created user successfuly')  
     } catch(err){
         res.status(400).json({
@@ -127,4 +126,9 @@ export const recoverPassword =  async(req: Request, res: Response) => {
             error: err
         })
     }
+}
+
+
+export const test = async(req:Request, res: Response) => {
+    res.status(200).json(req.body)
 }

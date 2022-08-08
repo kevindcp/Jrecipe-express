@@ -77,6 +77,3 @@ typings/
 
 # Docker env
 docker.env
-
-# Migrations
-migrations/
