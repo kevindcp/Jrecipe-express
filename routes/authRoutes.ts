@@ -1,5 +1,7 @@
 import express from "express"
-import { register, login, forgotPassword,recoverPassword, test } from "../controllers/auth"
+import { register, login, forgotPassword,recoverPassword, changePasswordManual } from "../controllers/auth"
+import { checkAuth } from "../middleware/checkAuth"
+import { isAdmin } from "../middleware/isAdmin"
 
 const authRouter = express.Router()
 
@@ -115,6 +117,6 @@ authRouter.post('/forgotPassword', forgotPassword)
  */
 authRouter.post('/recoverPassword', recoverPassword)
 
-authRouter.post('/test', test)
+authRouter.post('/admin/changepass', checkAuth, isAdmin, changePasswordManual)
 
 export default authRouter

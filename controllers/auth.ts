@@ -123,7 +123,29 @@ export const recoverPassword =  async(req: Request, res: Response) => {
     }
 }
 
-
-export const test = async(req:Request, res: Response) => {
-    res.status(200).json(req.body)
+export const changePasswordManual =  async(req: Request, res: Response) => {
+    try{
+        const {email, password} = req.body
+        const user = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+        })
+        if (!user) return res.status(400).json('Not a valid user')
+        if (password.length < 6) return res.status(400).json('Password is too short')
+        const passwordHash = await bcrypt.hash(password,10)
+        await prisma.user.update({
+            where : {
+                email
+            },
+            data : {
+                passwordHash,
+            },
+        })
+        res.status(200).json("Password changed")
+    } catch(err){
+        res.status(400).json({
+            error: err
+        })
+    }
 }
